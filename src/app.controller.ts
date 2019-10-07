@@ -23,15 +23,15 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('me')
-  getProfile(@Request() req) {
-    console.log(req);
-    return req.user;
-  }
-
   @Post('register')
   async register(@Body() postData: CreateUserDto) {
     return await this.authService.createUser(postData);
   }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+
 }
