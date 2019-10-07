@@ -3,7 +3,7 @@ import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
 import { CreateUserDto } from './DTOs/CreateUserDto';
-import { User } from './users/user.interface';
+import { SuccessRes } from './utils/ResFormatter';
 
 @Controller('api')
 export class AppController {
@@ -25,7 +25,8 @@ export class AppController {
 
   @Post('register')
   async register(@Body() postData: CreateUserDto) {
-    return await this.authService.createUser(postData);
+    const result = await this.authService.createUser(postData);
+    return SuccessRes(result);
   }
 
   @UseGuards(AuthGuard('jwt'))

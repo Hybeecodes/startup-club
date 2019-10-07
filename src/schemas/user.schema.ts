@@ -2,12 +2,12 @@ import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 
 export const UserSchema = new mongoose.Schema({
-    firstname: String,
-    lastname: String,
-    username: String,
-    email: String,
-    password: String,
-    profile_pic: String
+    firstname: { type: String, required: true},
+    lastname: { type: String, required: true},
+    username: { type: String, required: true, unique: true},
+    email: { type: String, required: true, unique: true},
+    password: { type: String, required: true},
+    profile_pic: { type: String, required: true}
 }, {
     timestamps: true
 });
