@@ -1,17 +1,17 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Post } from './post.interface';
+import { PostInterface } from './post.interface';
 import { CreatePostDto } from 'src/DTOs/CreatePost.dto';
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectModel('Post')
-        private readonly postModel: Model<Post>
+        private readonly postModel: Model<PostInterface>
     ) {}
 
-    async findById(id: string): Promise<Post | undefined > {
+    async findById(id: string): Promise<PostInterface | undefined > {
         const post =  await this.postModel.findById(id).exec();
         if(!post) {
             throw new NotFoundException('Post doesn\'t exist');
@@ -19,8 +19,9 @@ export class PostsService {
         return post;
     }
 
-    async create(postData): Promise<Post | undefined> {
+    async create(postData, id: string): Promise<PostInterface | undefined> {
         let newPost = new this.postModel(postData);
+        newPost.author = id;
         newPost = await newPost.save();
         if(!newPost) {
             throw new InternalServerErrorException('Unable to create new Post');
@@ -28,7 +29,7 @@ export class PostsService {
         return newPost;
     }
 
-    async update(postData: CreatePostDto, id: string): Promise<Post | undefined> {
+    async update(postData: CreatePostDto, id: string): Promise<PostInterface | undefined> {
         let post = await this.postModel.findById(id);
         if(!post) {
             throw new NotFoundException('Post doesn\'t exist');
