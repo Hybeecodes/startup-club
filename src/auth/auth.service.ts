@@ -3,12 +3,15 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/user.interface';
 import * as bcrypt from 'bcryptjs';
+import { InjectEventEmitter } from 'nest-emitter';
+import { AuthEventEmitter } from './auth.events';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UsersService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        @InjectEventEmitter() private readonly authEmitter: AuthEventEmitter,
         ) {}
 
     async validateUser(username: string, password: string) {
@@ -21,6 +24,7 @@ export class AuthService {
 
     async createUser(postData: User): Promise<User> {
         const user = await this.userService.create(postData);
+        this.authEmitter.emit('onRegistration', user.username);
         return user;
     }
 
@@ -32,5 +36,10 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(payload)
         }
+    }
+
+    async activateUser(postData) {
+        const { email, token } = postData;
+        return await this.userService.activateUser(email, token);
     }
 }

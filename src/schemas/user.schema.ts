@@ -7,7 +7,11 @@ export const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true},
     email: { type: String, required: true, unique: true},
     password: { type: String, required: true},
-    profile_pic: { type: String, required: true}
+    profile_pic: { type: String, required: true},
+    active: { type: Boolean, required: true, default: false},
+    activation_token: { type: String, default: null},
+    reset_token: { type: String },
+    reset_token_expiry: { type: Date }
 }, {
     timestamps: true
 });
