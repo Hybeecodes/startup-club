@@ -67,6 +67,6 @@ export class UsersService implements OnModuleInit {
 
     private async onRegistration(user: User) {
         console.log(`New User with username ${user.username} just registered`);
-        this.emailService.sendRegistrationMail(user.email);
+        this.emailService.sendRegistrationMail(user.email, user.username);
     }
 }

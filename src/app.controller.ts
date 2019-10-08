@@ -2,10 +2,10 @@ import { Controller, Get, Request, UseGuards, Post, Body } from '@nestjs/common'
 import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
-import { CreateUserDto } from './DTOs/CreateUserDto';
+import { CreateUserDto } from './DTOs/CreateUser.dto';
 import { SuccessRes } from './utils/ResFormatter';
-import { ActivateUserDto } from './DTOs/ActivateUserDto';
-import { ForgotPasswordDto } from './DTOs/ForgotPasswordDto';
+import { ActivateUserDto } from './DTOs/ActivateUser.dto';
+import { ForgotPasswordDto } from './DTOs/ForgotPassword.dto';
 
 @Controller('api')
 export class AppController {

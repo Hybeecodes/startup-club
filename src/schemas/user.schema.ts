@@ -10,8 +10,8 @@ export const UserSchema = new mongoose.Schema({
     profile_pic: { type: String, required: true},
     active: { type: Boolean, required: true, default: false},
     activation_token: { type: String, default: null},
-    reset_token: { type: String },
-    reset_token_expiry: { type: Date }
+    reset_token: { type: String, default: null },
+    reset_token_expiry: { type: Date, default: null }
 }, {
     timestamps: true
 });
