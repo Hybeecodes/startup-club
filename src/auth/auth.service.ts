@@ -24,7 +24,7 @@ export class AuthService {
 
     async createUser(postData: User): Promise<User> {
         const user = await this.userService.create(postData);
-        this.authEmitter.emit('onRegistration', user.username);
+        this.authEmitter.emit('onRegistration', user);
         return user;
     }
 

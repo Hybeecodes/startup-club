@@ -9,14 +9,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as nanoid from 'nanoid';
 import { InjectEventEmitter } from 'nest-emitter';
 import { AuthEventEmitter } from 'src/auth/auth.events';
-import { async } from 'rxjs/internal/scheduler/async';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
     constructor(
         @InjectModel('User')
         private readonly userModel: Model<User>,
-        @InjectEventEmitter() private readonly authEmitter: AuthEventEmitter
+        @InjectEventEmitter() private readonly authEmitter: AuthEventEmitter,
+        private readonly emailService: EmailService
         ) {}
 
     onModuleInit() {
@@ -64,7 +65,8 @@ export class UsersService implements OnModuleInit {
         return true;
     }
 
-    private async onRegistration(username: string) {
-        console.log(`New User with username ${username} just registered`);
+    private async onRegistration(user: User) {
+        console.log(`New User with username ${user.username} just registered`);
+        this.emailService.sendRegistrationMail(user.email);
     }
 }

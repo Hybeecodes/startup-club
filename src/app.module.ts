@@ -7,6 +7,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PostsModule } from './posts/posts.module';
 import { EventEmitter } from 'events';
 import { NestEmitterModule } from 'nest-emitter';
+import { HandlebarsAdapter, MailerModule } from '@nest-modules/mailer';
+import { EmailService } from './email/email.service';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -14,9 +17,23 @@ import { NestEmitterModule } from 'nest-emitter';
     UsersModule,
     NestEmitterModule.forRoot(new EventEmitter()),
     MongooseModule.forRoot('mongodb://localhost/startup-club'),
-    PostsModule
+    MailerModule.forRoot({
+      transport: 'smtps://obikoya11%40gmail.com:O.bikoko1@smtp.gmail.com',
+      defaults: {
+        from: '"Startup Club" <hello@startupclub.com>'
+      },
+      template: {
+        dir: __dirname + '/templates',
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        }
+      }
+    }),
+    PostsModule,
+    EmailModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, EmailService],
 })
 export class AppModule {}

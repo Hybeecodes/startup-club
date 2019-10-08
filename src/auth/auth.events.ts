@@ -1,8 +1,9 @@
 import { EventEmitter } from 'events';
 import { StrictEventEmitter } from 'nest-emitter';
+import { User } from 'src/users/user.interface';
 
 interface AuthEvents {
-    onRegistration: string;
+    onRegistration: User;
     onActivation: string;
 }
 
