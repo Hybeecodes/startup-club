@@ -3,6 +3,8 @@ import { PostsService } from './posts.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PostSchema } from '../schemas/posts.schema';
 import { PostsController } from './posts.controller';
+import { PromotionsService } from '../promotions/promotions.service';
+import { PromotionSchema } from '../schemas/promotion.schema';
 
 @Module({
   imports: [
@@ -11,9 +13,13 @@ import { PostsController } from './posts.controller';
         name: 'Post',
         schema: PostSchema
       }
-    ])
+    ]),
+    MongooseModule.forFeature([
+      { name: 'Promotion',
+       schema: PromotionSchema }
+  ])
   ],
-  providers: [PostsService],
+  providers: [PostsService, PromotionsService],
   controllers: [PostsController]
 })
 export class PostsModule {}

@@ -1,14 +1,16 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PostInterface } from './post.interface';
 import { CreatePostDto } from 'src/DTOs/CreatePost.dto';
+import { PromotionsService } from '../promotions/promotions.service';
 
 @Injectable()
 export class PostsService {
     constructor(
         @InjectModel('Post')
-        private readonly postModel: Model<PostInterface>
+        private readonly postModel: Model<PostInterface>,
+        private readonly promotionService: PromotionsService
     ) {}
 
     async findAll() {
@@ -68,7 +70,24 @@ export class PostsService {
         return deleted;
     }
 
-    async promote(postId: string, userId: string) {
-
+    async promote(postId: string, medium: string, userId: string) {
+        if(!medium) {
+            throw new BadRequestException('Promotion medium is required');
+        }
+        // create promotion
+        const promotion = await this.promotionService.new({
+            postId,
+            promoter: userId,
+            medium
+        });
+        if(!promotion) {
+            throw new InternalServerErrorException('Unable to create new promotion')
+        }
+        let post = await this.postModel.findById(postId);
+        if(post) {
+            post.promotions.push(promotion.id);
+            await post.save();
+        }
+        return promotion;
     }
 }

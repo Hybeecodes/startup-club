@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Put, UseGuards, Body, Req, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, UseGuards, Body, Req, Param, Delete, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostInterface } from './post.interface';
 import { CreatePostDto } from '../DTOs/CreatePost.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { SuccessRes } from '../utils/ResFormatter';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('api/posts')
@@ -41,8 +42,9 @@ export class PostsController {
         return await this.postsService.delete(id);
     }
 
-    @Post()
-    async promote(@Param('id') id:string) {
-        
+    @Post(':postId/promote')
+    async promote(@Query('medium') medium, @Param('postId') postId:string, @Req() req) {
+        const result = await this.postsService.promote(postId, medium, req.user.userId);
+        return SuccessRes(result);
     }
 }
