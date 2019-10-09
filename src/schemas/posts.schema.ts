@@ -27,10 +27,3 @@ export const PostSchema = new Schema({
 }, {
     timestamps: true
 });
-
-PostSchema.pre('save', function(next) {
-    if(this.isNew) {
-        this.slug = this.title.replace(/ /g,"_");
-    }
-    next();
-});

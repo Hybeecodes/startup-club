@@ -11,8 +11,24 @@ export class PostsService {
         private readonly postModel: Model<PostInterface>
     ) {}
 
+    async findAll() {
+        return await this.postModel.find().exec();
+    }
+
+    async findUserPosts(userId: string) {
+        return await this.postModel.find({ author: userId}).exec();
+    }
+
     async findById(id: string): Promise<PostInterface | undefined > {
         const post =  await this.postModel.findById(id).exec();
+        if(!post) {
+            throw new NotFoundException('Post doesn\'t exist');
+        }
+        return post;
+    }
+
+    async findBySlug(slug: string): Promise<PostInterface | undefined > {
+        const post =  await this.postModel.findOne({slug: slug}).exec();
         if(!post) {
             throw new NotFoundException('Post doesn\'t exist');
         }
@@ -22,6 +38,7 @@ export class PostsService {
     async create(postData, id: string): Promise<PostInterface | undefined> {
         let newPost = new this.postModel(postData);
         newPost.author = id;
+        newPost.slug = `${newPost.title.replace(/ /g,"_")}_${Date.now().toString()}`;
         newPost = await newPost.save();
         if(!newPost) {
             throw new InternalServerErrorException('Unable to create new Post');
@@ -49,5 +66,9 @@ export class PostsService {
             throw new InternalServerErrorException('Unable to delete post');
         }
         return deleted;
+    }
+
+    async promote(postId: string, userId: string) {
+
     }
 }
