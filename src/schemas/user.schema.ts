@@ -8,21 +8,22 @@ export const UserSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true},
     password: { type: String, required: true},
     profile_pic: { type: String, required: true},
+  promotions: { type: Number, required: true, default: 0 },
     active: { type: Boolean, required: true, default: false},
     activation_token: { type: String, default: null},
     reset_token: { type: String, default: null },
-    reset_token_expiry: { type: Date, default: null }
+  reset_token_expiry: { type: Date, default: null },
 }, {
-    timestamps: true
+  timestamps: true,
 });
 
 UserSchema.pre('save', function(next) {
-    if(this.isNew) {
+  if (this.isNew) {
         this.password = bcrypt.hashSync(this.password);
     }
-    next();
+  next();
 });
 
 UserSchema.methods.comparePass = function(pass) {
     return bcrypt.compareSync(pass, this.password);
-}
+};

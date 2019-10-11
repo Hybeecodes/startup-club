@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, UseGuards, Body, Req, Param, Delete, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostInterface } from './post.interface';
 import { CreatePostDto } from '../DTOs/CreatePost.dto';
@@ -9,12 +9,12 @@ import { SuccessRes } from '../utils/ResFormatter';
 @Controller('api/posts')
 export class PostsController {
     constructor(
-        private readonly postsService: PostsService
+      private readonly postsService: PostsService,
     ) {}
 
     @Get()
     async getAllPosts() {
-        return await this.postsService.findAll();
+        return await this.postsService.getPromotionBasedPosts();
     }
 
     @Get()
@@ -43,7 +43,7 @@ export class PostsController {
     }
 
     @Post(':postId/promote')
-    async promote(@Query('medium') medium, @Param('postId') postId:string, @Req() req) {
+    async promote(@Query('medium') medium, @Param('postId') postId: string, @Req() req) {
         const result = await this.postsService.promote(postId, medium, req.user.userId);
         return SuccessRes(result);
     }

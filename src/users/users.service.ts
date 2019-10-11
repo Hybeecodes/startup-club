@@ -1,8 +1,4 @@
-import { Injectable,
-         InternalServerErrorException,
-         ConflictException, 
-         BadRequestException, 
-         OnModuleInit} from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from './user.interface';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,10 +10,10 @@ import { EmailService } from '../email/email.service';
 @Injectable()
 export class UsersService implements OnModuleInit {
     constructor(
-        @InjectModel('User')
-        private readonly userModel: Model<User>,
-        @InjectEventEmitter() private readonly authEmitter: AuthEventEmitter,
-        private readonly emailService: EmailService
+      @InjectModel('User')
+      public readonly userModel: Model<User>,
+      @InjectEventEmitter() private readonly authEmitter: AuthEventEmitter,
+      private readonly emailService: EmailService,
         ) {}
 
     onModuleInit() {
@@ -32,16 +28,16 @@ export class UsersService implements OnModuleInit {
         const user = await this.userModel.findOne({
             $or: [
                 { username: postData.username},
-                { email: postData.email}
-            ]
+                { email: postData.email },
+            ],
         });
-        if(user) {
+        if (user) {
             throw new ConflictException('User exists already');
         }
         let newUser = new this.userModel(postData);
         newUser.activation_token = nanoid();
         newUser = await newUser.save();
-        if(!newUser) {
+        if (!newUser) {
             throw new InternalServerErrorException('Unable to Create New User');
         }
         return newUser;
@@ -50,23 +46,22 @@ export class UsersService implements OnModuleInit {
     async activateUser(email: string, token: string) {
         // check if email exists
         const user = await this.userModel.findOne({ email }).exec();
-        if(!user) {
+        if (!user) {
             throw new BadRequestException('User with email does not exist');
         }
-        if(user.activation_token !== token) {
+        if (user.activation_token !== token) {
             throw new BadRequestException('Invalid token supplied');
         }
         // update activation status
         user.active = true;
         user.activation_token = null;
-        if(!await user.save()){
+        if (!await user.save()) {
             throw new InternalServerErrorException('Unable to activate user');
         }
         return true;
     }
 
     private async onRegistration(user: User) {
-        console.log(`New User with username ${user.username} just registered`);
         this.emailService.sendRegistrationMail(user.email, user.username);
     }
 }
