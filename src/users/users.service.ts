@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, OnModuleInit } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { User } from './user.interface';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,9 +18,22 @@ export class UsersService implements OnModuleInit {
 
     onModuleInit() {
         this.authEmitter.on('onRegistration', async username => this.onRegistration(username));
+        this.authEmitter.on('onForgotPassword', async email => this.onForgotPassword(email));
     }
     async findOne(username: string): Promise<User | undefined> {
-        return await this.userModel.findOne({username});
+        const user = await this.userModel.findOne({ username });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        return user;
+    }
+
+    async findOneByEmail(email: string): Promise<User | undefined> {
+        const user = await this.userModel.findOne({ email });
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+        return user;
     }
 
     async create(postData): Promise<User | undefined> {
@@ -63,5 +76,9 @@ export class UsersService implements OnModuleInit {
 
     private async onRegistration(user: User) {
         this.emailService.sendRegistrationMail(user.email, user.username);
+    }
+
+    private async onForgotPassword(email: string) {
+        this.emailService.sendForgotPasswordEmail(email);
     }
 }

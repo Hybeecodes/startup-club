@@ -1,4 +1,4 @@
-import { Controller, Get, Request, UseGuards, Post, Body } from '@nestjs/common';
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
@@ -39,7 +39,7 @@ export class AppController {
 
   @Post('forgot-password')
   async forgotPassword(@Body() postData: ForgotPasswordDto) {
-
+    return await this.authService.sendForgotPasswordEmail(postData.email);
   }
 
   @Post('reset-password')

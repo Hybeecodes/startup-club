@@ -5,6 +5,7 @@ import { User } from 'src/users/user.interface';
 import * as bcrypt from 'bcryptjs';
 import { InjectEventEmitter } from 'nest-emitter';
 import { AuthEventEmitter } from './auth.events';
+import { SuccessRes } from '../utils/ResFormatter';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,7 @@ export class AuthService {
 
     async validateUser(username: string, password: string) {
         const user = await this.userService.findOne(username);
-        if(user && bcrypt.compareSync(password, user.password)) {
+        if (user && bcrypt.compareSync(password, user.password)) {
             return user;
         }
         return null;
@@ -31,15 +32,21 @@ export class AuthService {
     async login(user: any) {
         const payload = {
             username: user.username,
-            sub: user.id
+            sub: user.id,
         };
         return {
             access_token: this.jwtService.sign(payload)
-        }
+        };
     }
 
     async activateUser(postData) {
         const { email, token } = postData;
         return await this.userService.activateUser(email, token);
+    }
+
+    async sendForgotPasswordEmail(email: string) {
+        const user = await this.userService.findOneByEmail(email);
+        this.authEmitter.emit('onForgotPassword', email);
+        return SuccessRes();
     }
 }
