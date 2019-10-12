@@ -13,6 +13,9 @@ import { EmailModule } from './email/email.module';
 import { ConfigService } from './config/config.service';
 import { ConfigModule } from './config/config.module';
 
+// TODO:: Find a way to inject config service in this module
+const config = new ConfigService(`${process.env.NODE_ENV || 'development'}.env`);
+
 @Module({
   imports: [
     AuthModule,
@@ -20,7 +23,7 @@ import { ConfigModule } from './config/config.module';
     NestEmitterModule.forRoot(new EventEmitter()),
     MongooseModule.forRoot('mongodb://localhost/startup-club'),
     MailerModule.forRoot({
-      transport: `smtps://${}:${}@smtp.gmail.com`,
+      transport: `smtps://${config.get('MAIL_USER')}:${config.get('MAIL_PASS')}@smtp.gmail.com`,
       defaults: {
         from: '"Startup Club" <hello@startupclub.com>',
       },
