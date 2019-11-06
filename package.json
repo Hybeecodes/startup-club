@@ -30,7 +30,7 @@
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.2.3",
     "class-validator": "^0.10.1",
-    "mongoose": "^5.7.3",
+    "mongoose": "^5.7.5",
     "nanoid": "^2.1.2",
     "nest-emitter": "^1.1.0",
     "passport": "^0.4.0",
